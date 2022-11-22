@@ -1,10 +1,16 @@
-import * as S from './styles/app.styles'
-import Logo from './assets/img/devmemory_logo.png'
-import {InfoItem} from './components/information'
-import {Button} from './components/button'
-import Icon from './assets/svgs/restart.svg'
-import { useEffect, useState } from 'react'
-import { GridType } from './types/gridType'
+import * as S from './styles/app.styles';
+
+import Logo from './assets/img/devmemory_logo.png';
+import Icon from './assets/svgs/restart.svg';
+
+import {InfoItem} from './components/information';
+import {Button} from './components/button';
+import { GridItem } from './components/gridItem';
+
+import { useEffect, useState } from 'react';
+import { GridType } from './types/gridType';
+import { Itens } from './data/itens';
+
 
 const App = () => {
 
@@ -21,24 +27,37 @@ const App = () => {
     setMoveCount(0);
     setMoveCount(0);
 
-    //criar slots
+    //created slots
     let tempGrid: GridType[] = [];
 
-    for(let i = 0; i < 12 ;i++){
-      tempGrid.push({
+    for(let i = 0; i < (Itens.length * 2) ;i++)tempGrid.push({
         item: null,
-        show: false,
+        show: true,
         permanent: false,
       })
-    }
-    //complet slot
-
-    // put inside the state
     
+    //complet slot
+      for(let w = 0; w < 2; w++){
+        for(let i = 0; i < Itens.length; i++){
+          let random = -1;
+          while(random < 0 || tempGrid[random].item !== null){
+            random = Math.floor(Math.random()*(Itens.length*2));
+          }
+          tempGrid[random].item = i;
+      }
+    }
+    
+    // put inside the state
+    setGridItens(tempGrid);
+
     //start game
     setPlay(true);    
+  
   }
-  return (
+  const handleItemClick=(index: number) =>{
+    return
+  }
+    return (
     <S.Container>
         <S.Info>
           <S.LogoLink href="/">
@@ -54,6 +73,13 @@ const App = () => {
         </S.Info>
         <S.GridArea>
           <S.Grid>
+              {gridItens.map((item, index) => (
+              <GridItem 
+                key={index} 
+                item={item} 
+                onClick={()=> handleItemClick(index)}
+              />
+            ))}
           </S.Grid>
         </S.GridArea>
     </S.Container>
@@ -61,3 +87,5 @@ const App = () => {
 }
 
 export default App;
+
+
