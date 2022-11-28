@@ -10,20 +10,29 @@ import { GridItem } from './components/gridItem';
 import { useEffect, useState } from 'react';
 import { GridType } from './types/gridType';
 import { Itens } from './data/itens';
+import { FormatTime } from './helpers/formateTime';
 
 const App = () => {
-  const [play, setPlay] = useState<boolean>(true);
+  const [play, setPlay] = useState<boolean>(false);
   const [time, setTime] = useState<number>(0);
   const [moveCount, setMoveCount] = useState<number>(0);
   const [showCount, setShowCount] = useState<number>(0);
   const [gridItens, setGridItens] = useState<GridType[]>([]);
+
   useEffect(() => resetCreated(), []);
+
+  // useEffect(() => {
+  //   const timer = setInterval(() => {
+  //     if (play) setTime(time + 1);
+  //   }, 1000);
+  //   return () => clearInterval(timer);
+  // }, [play, time]);
 
   const resetCreated = () => {
     //reset
     setTime(0);
     setMoveCount(0);
-    setMoveCount(0);
+    setShowCount(0);
 
     //created slots
     let tempGrid: GridType[] = [];
@@ -52,9 +61,11 @@ const App = () => {
     //start game
     setPlay(true);
   };
+
   const handleItemClick = (index: number) => {
     return;
   };
+
   return (
     <S.Container>
       <S.Info>
@@ -63,7 +74,7 @@ const App = () => {
         </S.LogoLink>
 
         <S.InfoArea>
-          <InfoItem label="Time" value="00:00" />
+          <InfoItem label="Time" value={FormatTime(time)} />
           <InfoItem label="Moviment" value="0" />
         </S.InfoArea>
 
