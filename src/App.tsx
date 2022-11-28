@@ -21,13 +21,39 @@ const App = () => {
 
   useEffect(() => resetCreated(), []);
 
-  // useEffect(() => {
-  //   const timer = setInterval(() => {
-  //     if (play) setTime(time + 1);
-  //   }, 1000);
-  //   return () => clearInterval(timer);
-  // }, [play, time]);
+  useEffect(() => {
+    const timer = setInterval(() => {
+      if (play) setTime(time + 1);
+    }, 1000);
+    return () => clearInterval(timer);
+  }, [play, time]);
 
+  //verify if the card is the same
+  useEffect(() => {
+    if (showCount === 2) {
+      let opened = gridItens.filter((item) => item.show === true);
+      if (opened.length === 2) {
+        if (opened[0].item === opened[1].item) {
+          let tmpGrid = [...gridItens];
+          for (let i in tmpGrid) {
+            if (tmpGrid[i].show) {
+              tmpGrid[i].permanent = true;
+              tmpGrid[i].show = false;
+            }
+          }
+          setGridItens(tmpGrid);
+          setShowCount(0);
+        }
+      }
+    }
+  }, [showCount, gridItens]);
+  ////apagar depois
+  const StopTimer = () => {
+    setPlay(false);
+    setTime(0);
+    setMoveCount(0);
+    setShowCount(0);
+  };
   const resetCreated = () => {
     //reset
     setTime(0);
@@ -63,7 +89,17 @@ const App = () => {
   };
 
   const handleItemClick = (index: number) => {
-    return;
+    if (play && index !== null && showCount < 2) {
+      let tempGrid = [...gridItens];
+      if (
+        tempGrid[index].permanent === false &&
+        tempGrid[index].show === false
+      ) {
+        tempGrid[index].show = true;
+        setShowCount(showCount + 1);
+      }
+      setGridItens(tempGrid);
+    }
   };
 
   return (
@@ -72,13 +108,13 @@ const App = () => {
         <S.LogoLink href="/">
           <img src={Logo} width="200" alt="Logo do Jogo" />
         </S.LogoLink>
-
         <S.InfoArea>
           <InfoItem label="Time" value={FormatTime(time)} />
           <InfoItem label="Moviment" value="0" />
         </S.InfoArea>
-
         <Button icon={Icon} label="Restart" onClick={resetCreated} />
+        /apagar depois
+        <button onClick={StopTimer}>Stop</button>
       </S.Info>
       <S.GridArea>
         <S.Grid>
