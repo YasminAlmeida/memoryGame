@@ -19,7 +19,8 @@ export const Info = styled.div`
     align-items: center;
   } 
 `
-export const LogoLink = styled.a` 
+
+export const LogoLink = styled.a`
   display: block;
 ` 
 export const InfoArea = styled.div` 
