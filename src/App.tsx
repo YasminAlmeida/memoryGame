@@ -1,16 +1,16 @@
-import * as S from './styles/app.styles';
+import * as S from "./styles/app.styles";
 
-import Logo from './assets/img/devmemory_logo.png';
-import Icon from './assets/svgs/restart.svg';
+import Logo from "./assets/img/devmemory_logo.png";
+import Icon from "./assets/svgs/restart.svg";
 
-import { InfoItem } from './components/information';
-import { Button } from './components/button';
-import { GridItem } from './components/gridItem';
+import { InfoItem } from "./components/information";
+import { Button } from "./components/button";
+import { GridItem } from "./components/gridItem";
 
-import { useEffect, useState } from 'react';
-import { GridType } from './types/gridType';
-import { Itens } from './data/itens';
-import { FormatTime } from './helpers/formateTime';
+import { useEffect, useState } from "react";
+import { GridType } from "./types/gridType";
+import { Itens } from "./data/itens";
+import { FormatTime } from "./helpers/formateTime";
 
 const App = () => {
   const [play, setPlay] = useState<boolean>(false);
@@ -18,9 +18,40 @@ const App = () => {
   const [moveCount, setMoveCount] = useState<number>(0);
   const [showCount, setShowCount] = useState<number>(0);
   const [gridItens, setGridItens] = useState<GridType[]>([]);
-
-  useEffect(() => resetCreated(), []);
-
+  const [pauseGame, setPauseGame] = useState<boolean>(false);
+  useEffect(() => {
+    if (showCount === 2) {
+      let opened = gridItens.filter((item) => item.show === true);
+      if (opened.length === 2) {
+        if (opened[0].item === opened[1].item) {
+          let tmpGrid = [...gridItens];
+          for (let i in tmpGrid) {
+            if (tmpGrid[i].show) {
+              tmpGrid[i].permanent = true;
+              tmpGrid[i].show = false;
+            }
+          }
+          setGridItens(tmpGrid);
+          setShowCount(0);
+        } else {
+          setTimeout(() => {
+            let tmpGrid = [...gridItens];
+            for (let i in tmpGrid) {
+              tmpGrid[i].show = false;
+          }
+             setGridItens(tmpGrid);
+              setShowCount(0);
+        },800);
+        }
+        setMoveCount(moveCount => moveCount + 1);
+      }
+    }
+  }, [showCount, gridItens]);
+  useEffect(()=>{
+    if(moveCount>0 && gridItens.every(item => item.permanent === true)){
+      setPlay(false)
+    }
+  },[moveCount, GridItem])
   useEffect(() => {
     const timer = setInterval(() => {
       if (play) setTime(time + 1);
@@ -49,10 +80,13 @@ const App = () => {
   }, [showCount, gridItens]);
   ////apagar depois
   const StopTimer = () => {
-    setPlay(false);
-    setTime(0);
-    setMoveCount(0);
-    setShowCount(0);
+    setPauseGame(!pauseGame)
+    if(pauseGame !== false){
+      setPlay(false);
+    } else{
+      setPlay(true)
+    }
+    
   };
   const resetCreated = () => {
     //reset
@@ -110,11 +144,15 @@ const App = () => {
         </S.LogoLink>
         <S.InfoArea>
           <InfoItem label="Time" value={FormatTime(time)} />
-          <InfoItem label="Moviment" value="0" />
+          <InfoItem label="Moviment" value={moveCount.toString()} />
         </S.InfoArea>
         <Button icon={Icon} label="Restart" onClick={resetCreated} />
-        /apagar depois
-        <button onClick={StopTimer}>Stop</button>
+        {pauseGame ?(
+           <S.ButtonPause onClick={StopTimer}>Pause Game</S.ButtonPause>
+        ):(
+          <S.ButtonPause onClick={StopTimer}>Continue</S.ButtonPause>
+        )}
+       
       </S.Info>
       <S.GridArea>
         <S.Grid>
